@@ -16,7 +16,7 @@
 
   /* ── 사이드바 ── */
   #sidebar{width:220px;flex:none;background:var(--panel);border-right:1px solid var(--line);
-    display:flex;flex-direction:column;overflow-y:auto}
+    display:flex;flex-direction:column;overflow-y:auto;height:100vh}
   #sidebar h1{font-size:15px;padding:16px 14px;border-bottom:1px solid var(--line)}
   .lesson{padding:12px 14px;cursor:pointer;font-size:13px;color:var(--dim);border-left:3px solid transparent}
   .lesson:hover{background:var(--panel2);color:var(--txt)}
@@ -70,6 +70,19 @@
 
   #navBtns{display:flex;justify-content:space-between;padding:0 22px 16px}
 
+  /* ── 용어 사전 ── */
+  #glossaryView{display:none;flex-direction:column;flex:1;padding:16px 22px;overflow:hidden}
+  #glossaryView.show{display:flex}
+  #glossaryHead{display:flex;gap:10px;margin-bottom:12px}
+  #glossarySearch{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    color:var(--txt);padding:10px 12px;font-size:13px;outline:none}
+  #glossarySearch:focus{border-color:var(--accent)}
+  #glossaryList{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .gterm{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .gterm .gname{font-size:14px;font-weight:700;color:var(--accent)}
+  .gterm .gname .gcode{font-family:Consolas,monospace;color:var(--accent2);margin-left:6px;font-size:12px}
+  .gterm .gdef{font-size:12.5px;color:var(--dim);margin-top:4px;line-height:1.55}
+
   ::-webkit-scrollbar{width:8px}
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
 
@@ -87,6 +100,9 @@
   <div id="sidebar">
     <h1>🧩 코딩 기초</h1>
     <div id="lessonList"></div>
+    <div class="lesson" id="glossaryBtn" style="border-top:1px solid var(--line);margin-top:auto;color:var(--accent2)">
+      <span class="num">📖</span><span class="txt">용어 사전 전체보기</span>
+    </div>
   </div>
   <div id="main">
     <div id="header">
@@ -106,6 +122,13 @@
         <div id="output"><div class="ph line">// 실행 결과가 여기 표시됩니다</div></div>
         <div id="gradeResult"></div>
       </div>
+    </div>
+    <div id="glossaryView">
+      <div id="glossaryHead">
+        <input id="glossarySearch" placeholder="🔍 용어 검색 (예: 배열, 함수, 반복문...)">
+        <button class="btn" id="glossaryClose">✕ 닫고 레슨으로</button>
+      </div>
+      <div id="glossaryList"></div>
     </div>
     <div id="navBtns">
       <button class="btn" id="prevBtn">← 이전 단계</button>
@@ -315,6 +338,266 @@ const LESSONS=[
     check:logs=>logs.some(t=>t.includes('코딩')),
   }
 },
+{
+  title:'연산자 (Operator)',
+  sub:'+ - * / % 그리고 ++ -- 로 계산하기',
+  html:`
+    <h3>산술 연산자</h3>
+    <ul>
+      <li><code>+</code> 더하기, <code>-</code> 빼기, <code>*</code> 곱하기, <code>/</code> 나누기</li>
+      <li><code>%</code> 나머지 — 예: <code>7 % 2</code>는 1 (7을 2로 나눈 나머지)</li>
+      <li><code>**</code> 거듭제곱 — 예: <code>2 ** 3</code>은 8 (2의 3제곱)</li>
+    </ul>
+    <h3>대입/증감 연산자</h3>
+    <ul>
+      <li><code>x += 1</code> — <code>x = x + 1</code>과 같음</li>
+      <li><code>x++</code> — x에 1을 더함 (증가)</li>
+      <li><code>x--</code> — x에서 1을 뺌 (감소)</li>
+    </ul>
+    <div class="tip">💡 팁: <code>%</code>(나머지)는 "짝수/홀수 판별", "몇 번째마다 반복" 같은 문제에서 정말 자주 쓰여요.</div>
+  `,
+  code:`console.log("더하기:", 3 + 5);\nconsole.log("나머지:", 7 % 2);\nconsole.log("거듭제곱:", 2 ** 3);\n\nlet x = 10;\nx += 5;\nconsole.log("x += 5 후:", x);\nx++;\nconsole.log("x++ 후:", x);`,
+  quiz:{
+    q:'<code>17 % 5</code>(17을 5로 나눈 나머지)의 결과를 출력해보세요.',
+    starter:`// 17 % 5 결과를 출력해보세요\n`,
+    hint:'console.log(17 % 5); → 17 ÷ 5 = 3 나머지 2, 정답은 2예요.',
+    check:logs=>logs.some(t=>t.trim()==='2'),
+  }
+},
+{
+  title:'비교 · 논리 연산자',
+  sub:'== 와 === 의 차이, && || ! 제대로 알기',
+  html:`
+    <h3>비교 연산자</h3>
+    <ul>
+      <li><code>===</code> — 값과 <b>타입까지</b> 같은지 비교 (권장!)</li>
+      <li><code>==</code> — 값만 대충 비교 (타입이 달라도 같다고 나올 수 있어 헷갈림, 되도록 안 씀)</li>
+      <li><code>!==</code> — 다른지 비교 (엄격하게)</li>
+    </ul>
+    <h3>논리 연산자</h3>
+    <ul>
+      <li><code>&&</code> (AND) — 양쪽 다 참이어야 참</li>
+      <li><code>||</code> (OR) — 둘 중 하나만 참이어도 참</li>
+      <li><code>!</code> (NOT) — 참/거짓을 반대로 뒤집음</li>
+    </ul>
+    <div class="tip">💡 팁: <code>"5" == 5</code>는 true지만 <code>"5" === 5</code>는 false예요. 헷갈림을 막으려면 항상 <b>===</b>를 쓰세요.</div>
+  `,
+  code:`console.log("5" == 5);   // true (값만 비교)\nconsole.log("5" === 5);  // false (타입도 비교)\n\nconst age = 20;\nconsole.log(age > 18 && age < 65);  // 둘 다 참이어야 true\nconsole.log(age < 10 || age > 15);  // 하나만 참이어도 true\nconsole.log(!(age > 18));           // 참/거짓 뒤집기`,
+  quiz:{
+    q:'변수 <code>a = 10</code>, <code>b = "10"</code>일 때, <code>a === b</code>의 결과를 출력해보세요.',
+    starter:`const a = 10;\nconst b = "10";\n\n// a === b 결과를 출력해보세요\n`,
+    hint:'console.log(a === b); → 숫자와 문자열은 타입이 다르므로 결과는 false예요.',
+    check:logs=>logs.some(t=>t.trim()==='false'),
+  }
+},
+{
+  title:'문자열 다루기 (String)',
+  sub:'글자를 자르고, 찾고, 바꾸는 방법',
+  html:`
+    <h3>자주 쓰는 문자열 기능</h3>
+    <ul>
+      <li><code>str.length</code> — 글자 수</li>
+      <li><code>str.includes("가")</code> — "가"라는 글자가 포함되어 있는지 (true/false)</li>
+      <li><code>str.indexOf("가")</code> — "가"가 몇 번째 위치인지 (없으면 -1)</li>
+      <li><code>str.slice(0,3)</code> — 0번째부터 3번째 앞까지 잘라내기</li>
+      <li><code>str.toUpperCase()</code> / <code>toLowerCase()</code> — 대문자/소문자로 변환</li>
+      <li><code>str.trim()</code> — 앞뒤 공백 제거</li>
+    </ul>
+    <h3>템플릿 리터럴 (백틱)</h3>
+    <p>따옴표 대신 <code>\` \`</code>(백틱)을 쓰면 <code>\${변수}</code>로 변수를 문장 안에 바로 넣을 수 있어요.</p>
+    <div class="tip">💡 팁: <code>"안녕 " + name + "!"</code> 보다 <code>\`안녕 \${name}!\`</code>이 훨씬 읽기 편해요.</div>
+  `,
+  code:`const msg = "Hello Coding";\n\nconsole.log("길이:", msg.length);\nconsole.log("포함?:", msg.includes("Coding"));\nconsole.log("자르기:", msg.slice(0, 5));\nconsole.log("대문자:", msg.toUpperCase());\n\nconst name = "코딩이";\nconsole.log(\`안녕, \${name}! 반가워요.\`);`,
+  quiz:{
+    q:'문자열 <code>const word = "JavaScript"</code>의 길이(<code>length</code>)를 출력해보세요.',
+    starter:`const word = "JavaScript";\n\n// word의 길이를 출력해보세요\n`,
+    hint:'console.log(word.length); → "JavaScript"는 10글자예요.',
+    check:logs=>logs.some(t=>t.trim()==='10'),
+  }
+},
+{
+  title:'배열 메서드 심화',
+  sub:'map, filter, find로 배열을 자유자재로',
+  html:`
+    <h3>더 강력한 배열 도구</h3>
+    <ul>
+      <li><code>arr.map(f)</code> — 배열의 각 값을 <b>변형</b>해서 새 배열로 만듦</li>
+      <li><code>arr.filter(f)</code> — 조건에 맞는 값만 <b>골라서</b> 새 배열로 만듦</li>
+      <li><code>arr.find(f)</code> — 조건에 맞는 <b>첫 번째 값 하나</b>만 찾음</li>
+      <li><code>arr.includes(값)</code> — 배열에 그 값이 있는지 (true/false)</li>
+      <li><code>arr.sort()</code> — 정렬 (기본은 문자 기준이라 숫자는 주의!)</li>
+    </ul>
+    <div class="tip">💡 팁: <code>f</code> 자리에는 <code>x => x * 2</code> 처럼 짧은 <b>화살표 함수</b>를 넣는 게 일반적이에요.</div>
+  `,
+  code:`const nums = [1, 2, 3, 4, 5];\n\nconst doubled = nums.map(n => n * 2);\nconsole.log("2배로:", doubled);\n\nconst evens = nums.filter(n => n % 2 === 0);\nconsole.log("짝수만:", evens);\n\nconst found = nums.find(n => n > 3);\nconsole.log("3보다 큰 첫 값:", found);`,
+  quiz:{
+    q:'배열 <code>const nums = [1,2,3,4,5,6]</code>에서 <code>filter</code>를 사용해 짝수만 골라 출력해보세요. (결과: [2, 4, 6])',
+    starter:`const nums = [1, 2, 3, 4, 5, 6];\n\n// filter로 짝수만 골라 출력해보세요\n`,
+    hint:'console.log(nums.filter(n => n % 2 === 0));',
+    check:logs=>logs.some(t=>t.includes('2')&&t.includes('4')&&t.includes('6')),
+  }
+},
+{
+  title:'삼항연산자 & null/undefined',
+  sub:'짧게 조건 쓰기, 그리고 "값이 없다"는 것의 의미',
+  html:`
+    <h3>삼항연산자 (? :)</h3>
+    <p><code>조건 ? 참일때값 : 거짓일때값</code> 형태로, 짧은 if/else를 한 줄로 쓸 수 있어요.</p>
+    <h3>값이 "없다"는 걸 표현하는 것들</h3>
+    <ul>
+      <li><code>undefined</code> — 값이 아예 <b>정해지지 않음</b> (변수만 선언하고 값을 안 넣었을 때)</li>
+      <li><code>null</code> — 값이 <b>의도적으로 비어있음</b>을 표현 (개발자가 직접 넣음)</li>
+      <li><code>NaN</code> — Not a Number, 숫자가 아닌 계산 결과 (예: "abc" * 2)</li>
+    </ul>
+    <div class="tip">💡 팁: <code>undefined</code>는 "깜빡하고 안 넣음", <code>null</code>은 "일부러 비워둠"이라고 기억하면 헷갈리지 않아요.</div>
+  `,
+  code:`const age = 20;\nconst msg = age >= 18 ? "성인입니다" : "미성년자입니다";\nconsole.log(msg);\n\nlet a;\nconsole.log(a);           // undefined\n\nlet b = null;\nconsole.log(b);           // null\n\nconsole.log("abc" * 2);   // NaN`,
+  quiz:{
+    q:'삼항연산자를 사용해서, <code>score = 40</code>일 때 60 이상이면 <b>"합격"</b>, 아니면 <b>"불합격"</b>을 출력해보세요.',
+    starter:`const score = 40;\n\n// 삼항연산자로 합격/불합격을 출력해보세요\n`,
+    hint:'console.log(score >= 60 ? "합격" : "불합격");',
+    check:logs=>logs.some(t=>t.includes('불합격')),
+  }
+},
+{
+  title:'화살표 함수 & 스코프',
+  sub:'함수를 짧게 쓰는 법과 변수가 보이는 범위',
+  html:`
+    <h3>화살표 함수 (Arrow Function)</h3>
+    <p><code>function</code> 키워드 대신 <code>=&gt;</code>(화살표)로 함수를 더 짧게 쓸 수 있어요.</p>
+    <ul>
+      <li><code>function add(a,b){ return a+b; }</code></li>
+      <li>= <code>const add = (a,b) => a + b;</code> (중괄호+return 생략 가능)</li>
+    </ul>
+    <h3>스코프 (Scope) — 변수가 보이는 범위</h3>
+    <p>중괄호 <code>{ }</code> 안에서 만든 변수는 그 <b>안에서만</b> 사용할 수 있어요. 이걸 스코프라고 해요.</p>
+    <div class="tip">💡 팁: 함수나 if/for 블록 <b>안에서</b> let/const로 만든 변수는 블록 <b>밖에서는</b> 사용할 수 없어요.</div>
+  `,
+  code:`const add = (a, b) => a + b;\nconst square = x => x * x;\n\nconsole.log(add(2, 3));\nconsole.log(square(5));\n\nif (true) {\n  let insideVar = "나는 블록 안에만 있어요";\n  console.log(insideVar);\n}\n// console.log(insideVar); // 여기서 쓰면 오류가 나요! (스코프 밖이라서)`,
+  quiz:{
+    q:'화살표 함수로 <code>triple</code>이라는, 숫자를 3배로 만드는 함수를 만들고 <code>triple(4)</code>를 출력해보세요.',
+    starter:`// triple 화살표 함수를 만들고 triple(4)를 출력해보세요\nconst triple = x => ;\n`,
+    hint:'const triple = x => x * 3; 그 다음 console.log(triple(4)); → 결과는 12예요.',
+    check:logs=>logs.some(t=>t.trim()==='12'),
+  }
+},
+{
+  title:'구조분해할당 & 스프레드',
+  sub:'배열/객체에서 값을 쏙쏙 꺼내는 문법',
+  html:`
+    <h3>구조분해할당 (Destructuring)</h3>
+    <p>배열이나 객체 안의 값을 변수로 한 번에 꺼낼 수 있어요.</p>
+    <ul>
+      <li>배열: <code>const [a, b] = [1, 2];</code> → a=1, b=2</li>
+      <li>객체: <code>const {name, age} = person;</code> → person.name, person.age를 바로 꺼냄</li>
+    </ul>
+    <h3>스프레드 연산자 (...)</h3>
+    <p>배열이나 객체를 <b>펼쳐서</b> 복사하거나 합칠 때 사용해요.</p>
+    <div class="tip">💡 팁: <code>const copy = [...arr]</code>처럼 쓰면 원본은 그대로 두고 새 배열을 복사할 수 있어요.</div>
+  `,
+  code:`const [first, second] = ["사과", "바나나"];\nconsole.log(first, second);\n\nconst person = { name: "코딩이", age: 13 };\nconst { name, age } = person;\nconsole.log(name, age);\n\nconst arr1 = [1, 2];\nconst arr2 = [...arr1, 3, 4];\nconsole.log(arr2);`,
+  quiz:{
+    q:'객체 <code>const info = { city: "서울", year: 2026 }</code>에서 구조분해할당으로 <code>city</code> 값을 꺼내 출력해보세요.',
+    starter:`const info = { city: "서울", year: 2026 };\n\n// 구조분해할당으로 city를 꺼내 출력해보세요\n`,
+    hint:'const { city } = info; console.log(city); → 결과는 "서울"이에요.',
+    check:logs=>logs.some(t=>t.includes('서울')),
+  }
+},
+{
+  title:'에러 처리 (try/catch)',
+  sub:'코드가 실패해도 프로그램이 멈추지 않게 하기',
+  html:`
+    <h3>try / catch</h3>
+    <p><code>try { }</code> 안의 코드를 실행하다가 오류가 나면, 프로그램이 멈추지 않고
+    <code>catch (e) { }</code> 블록이 대신 실행돼요.</p>
+    <ul>
+      <li><code>try</code> — 오류가 날 수도 있는 코드를 넣는 곳</li>
+      <li><code>catch (e)</code> — 오류가 났을 때 처리할 코드, <code>e.message</code>로 오류 내용 확인</li>
+    </ul>
+    <div class="tip">💡 팁: 사용자 입력, 네트워크 요청처럼 "실패할 수도 있는" 작업에는 try/catch를 꼭 감싸주는 게 안전해요.</div>
+  `,
+  code:`try {\n  const result = mysteryFunction(); // 존재하지 않는 함수라 오류가 남\n  console.log(result);\n} catch (e) {\n  console.log("오류가 발생했지만 프로그램은 안 멈춰요:", e.message);\n}\nconsole.log("이 코드는 계속 실행돼요!");`,
+  quiz:{
+    q:'아래 코드를 <code>try/catch</code>로 감싸서, 오류가 나도 <b>"에러를 잡았어요"</b>가 출력되게 만들어보세요: <code>undefinedFn();</code>',
+    starter:`// try/catch로 감싸서 에러를 잡아보세요\nundefinedFn();\n`,
+    hint:'try { undefinedFn(); } catch (e) { console.log("에러를 잡았어요"); }',
+    check:logs=>logs.some(t=>t.includes('에러를 잡았어요')),
+  }
+},
+{
+  title:'클래스 (Class) — 객체지향 기초',
+  sub:'비슷한 객체를 여러 개 찍어내는 틀(설계도)',
+  html:`
+    <h3>클래스란?</h3>
+    <p>객체를 만드는 <b>설계도</b>예요. 예를 들어 "학생"이라는 설계도(클래스)를 만들어두면,
+    그걸로 여러 명의 학생(객체)을 쉽게 만들 수 있어요.</p>
+    <ul>
+      <li><code>constructor</code> — 클래스로 객체를 만들 때 처음 실행되는 함수 (초기값 설정)</li>
+      <li><code>new 클래스이름(...)</code> — 클래스로 실제 객체를 만드는 방법</li>
+      <li><code>this</code> — "이 객체 자신"을 가리키는 키워드</li>
+    </ul>
+    <div class="tip">💡 팁: 클래스는 게임 캐릭터, 학생 명부처럼 "같은 모양, 다른 값"을 가진 여러 데이터를 만들 때 유용해요.</div>
+  `,
+  code:`class Student {\n  constructor(name, score) {\n    this.name = name;\n    this.score = score;\n  }\n  intro() {\n    return this.name + "의 점수는 " + this.score + "점";\n  }\n}\n\nconst s1 = new Student("철수", 90);\nconst s2 = new Student("영희", 95);\n\nconsole.log(s1.intro());\nconsole.log(s2.intro());`,
+  quiz:{
+    q:'<code>Animal</code> 클래스를 만들어 <code>name</code>을 저장하고, <code>new Animal("고양이")</code>로 객체를 만든 뒤 <code>.name</code>을 출력해보세요.',
+    starter:`class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n}\n\n// Animal 객체를 만들고 name을 출력해보세요\n`,
+    hint:'const a = new Animal("고양이"); console.log(a.name);',
+    check:logs=>logs.some(t=>t.includes('고양이')),
+  }
+},
+];
+
+const GLOSSARY=[
+  {t:'코딩 / 프로그래밍',c:'coding',d:'컴퓨터가 알아들을 수 있는 언어로, 컴퓨터에게 할 일을 순서대로 적어주는 것.'},
+  {t:'프로그램',c:'program',d:'코딩으로 만들어진, 순서대로 실행되는 명령어 모음. 앱, 게임, 웹사이트 모두 프로그램이다.'},
+  {t:'자바스크립트',c:'JavaScript',d:'웹사이트를 동적으로 만들 때 가장 널리 쓰이는 코딩 언어. 이 앱의 예제도 모두 자바스크립트.'},
+  {t:'콘솔',c:'console',d:'프로그램이 출력하는 메시지를 보여주는 창. console.log()로 값을 콘솔에 출력한다.'},
+  {t:'변수',c:'variable',d:'값을 담아두는 상자. 이름을 붙여서(let/const) 나중에 다시 꺼내 쓸 수 있다.'},
+  {t:'상수',c:'constant / const',d:'한 번 정하면 바뀌지 않는 값. const로 선언한 변수.'},
+  {t:'자료형',c:'data type',d:'값의 종류. 숫자(Number), 문자열(String), 참거짓(Boolean) 등이 있다.'},
+  {t:'문자열',c:'String',d:'따옴표(" " 또는 \\\' \\\')로 감싼 글자들의 모음. 예: "안녕하세요"'},
+  {t:'숫자형',c:'Number',d:'정수나 소수 등 숫자 값. 따옴표 없이 그냥 쓴다. 예: 10, 3.14'},
+  {t:'불리언',c:'Boolean',d:'참(true) 또는 거짓(false), 딱 두 가지 값만 가지는 자료형. 조건 판단에 사용.'},
+  {t:'undefined',c:'undefined',d:'변수에 값을 아직 정하지 않았을 때 자동으로 들어가는 "값이 없음" 상태.'},
+  {t:'null',c:'null',d:'개발자가 일부러 "비어있음"을 표현하려고 넣는 값.'},
+  {t:'NaN',c:'Not a Number',d:'숫자가 아닌 계산을 했을 때 나오는 결과. 예: "abc" * 2'},
+  {t:'연산자',c:'operator',d:'+ - * / % 같이 계산을 하거나 값을 비교/결합하는 기호.'},
+  {t:'대입 연산자',c:'= += -=',d:'변수에 값을 넣거나(=), 기존 값에 더하거나 빼는(+=, -=) 연산자.'},
+  {t:'비교 연산자',c:'=== !== > <',d:'두 값을 비교해서 참/거짓 결과를 만드는 연산자.'},
+  {t:'논리 연산자',c:'&& || !',d:'여러 조건을 "그리고(&&)", "또는(||)"으로 묶거나 "반대로(!)" 뒤집는 연산자.'},
+  {t:'조건문',c:'if / else',d:'조건이 참인지 거짓인지에 따라 다른 코드를 실행하는 문법.'},
+  {t:'삼항연산자',c:'조건 ? A : B',d:'짧은 if/else를 한 줄로 쓸 수 있는 연산자.'},
+  {t:'반복문',c:'for / while',d:'같은 코드를 여러 번 반복해서 실행하는 문법.'},
+  {t:'무한 루프',c:'infinite loop',d:'반복문의 조건이 절대 거짓이 되지 않아 영원히 반복되는 상태(버그의 일종).'},
+  {t:'함수',c:'function',d:'자주 쓰는 코드를 이름 붙여 저장해두고, 필요할 때 호출해서 재사용하는 코드 덩어리.'},
+  {t:'매개변수',c:'parameter',d:'함수를 호출할 때 함수 안으로 전달하는 값을 받는 자리.'},
+  {t:'인자',c:'argument',d:'함수를 호출할 때 실제로 넣어주는 값. (매개변수 자리에 들어가는 실제 값)'},
+  {t:'반환값',c:'return value',d:'함수가 실행을 마치고 결과로 돌려주는 값. return 키워드로 지정한다.'},
+  {t:'화살표 함수',c:'x => x*2',d:'function 키워드 없이 =>(화살표)로 짧게 쓰는 함수 문법.'},
+  {t:'스코프',c:'scope',d:'변수가 유효하게 사용될 수 있는 범위. 보통 중괄호 { } 블록 안으로 제한된다.'},
+  {t:'배열',c:'Array',d:'여러 개의 값을 순서대로(인덱스로 구분해서) 담는 자료구조. [ ]로 표현.'},
+  {t:'인덱스',c:'index',d:'배열에서 값의 위치를 나타내는 번호. 0부터 시작한다.'},
+  {t:'객체',c:'Object',d:'key: value 형태로 이름을 붙여 여러 값을 묶어 담는 자료구조. { }로 표현.'},
+  {t:'속성',c:'property',d:'객체 안에 들어있는 key: value 쌍 하나하나. obj.속성명으로 접근.'},
+  {t:'메서드',c:'method',d:'객체 또는 배열이 가지고 있는, 실행 가능한 함수. 예: arr.push(), str.slice()'},
+  {t:'map',c:'arr.map()',d:'배열의 각 값을 원하는 형태로 바꿔서 새로운 배열을 만드는 메서드.'},
+  {t:'filter',c:'arr.filter()',d:'배열에서 조건에 맞는 값만 골라 새로운 배열을 만드는 메서드.'},
+  {t:'find',c:'arr.find()',d:'배열에서 조건에 맞는 첫 번째 값 하나만 찾아주는 메서드.'},
+  {t:'forEach',c:'arr.forEach()',d:'배열의 각 값에 대해 순서대로 원하는 코드를 실행하는 메서드.'},
+  {t:'템플릿 리터럴',c:'`${}`',d:'백틱(`)으로 문자열을 감싸고 ${변수}로 값을 바로 끼워넣는 문법.'},
+  {t:'구조분해할당',c:'destructuring',d:'배열이나 객체 안의 값을 변수로 한 번에 꺼내는 문법. const {a,b}=obj;'},
+  {t:'스프레드 연산자',c:'...arr',d:'배열이나 객체를 펼쳐서 복사하거나 합칠 때 쓰는 문법. [...arr, 값]'},
+  {t:'타입 확인',c:'typeof',d:'값이 어떤 자료형인지 문자열로 알려주는 연산자. typeof 10 → "number"'},
+  {t:'에러 / 오류',c:'error',d:'코드 실행 중 문제가 생겨 프로그램이 멈추는 상황.'},
+  {t:'예외 처리',c:'try/catch',d:'오류가 나도 프로그램이 멈추지 않도록, try 블록에서 실패하면 catch 블록이 대신 실행되게 하는 문법.'},
+  {t:'JSON',c:'JavaScript Object Notation',d:'객체나 배열 데이터를 문자로 표현하는 약속된 형식. 서버와 데이터를 주고받을 때 널리 쓰인다.'},
+  {t:'클래스',c:'class',d:'비슷한 객체를 여러 개 만들기 위한 설계도(틀).'},
+  {t:'생성자',c:'constructor',d:'클래스로 객체를 만들 때 가장 먼저 실행되어 초기값을 정해주는 함수.'},
+  {t:'this',c:'this',d:'클래스나 객체의 메서드 안에서 "이 객체 자신"을 가리키는 키워드.'},
+  {t:'인스턴스',c:'instance',d:'클래스라는 설계도로 실제 만들어낸 객체 하나하나. new 클래스명()으로 생성.'},
+  {t:'세미콜론',c:';',d:'코드 한 줄이 끝났음을 알리는 기호. 자바스크립트는 없어도 대부분 동작하지만 붙이는 게 안전하다.'},
+  {t:'주석',c:'comment (//)',d:'코드가 아니라 사람이 읽는 설명. //로 시작한 줄은 컴퓨터가 실행하지 않고 무시한다.'},
 ];
 
 let cur=0;
@@ -405,6 +688,34 @@ document.getElementById('editor').addEventListener('keydown',e=>{
     t.selectionStart=t.selectionEnd=s+2;
   }
 });
+
+// ── 용어 사전 ──
+function renderGlossary(filter){
+  const list=document.getElementById('glossaryList');
+  const q=(filter||'').trim().toLowerCase();
+  const items=GLOSSARY.filter(g=>!q||g.t.toLowerCase().includes(q)||g.c.toLowerCase().includes(q)||g.d.toLowerCase().includes(q));
+  list.innerHTML=items.length?items.map(g=>
+    `<div class="gterm"><div class="gname">${g.t}<span class="gcode">${g.c}</span></div><div class="gdef">${g.d}</div></div>`
+  ).join(''):'<div class="gterm"><div class="gdef">검색 결과가 없습니다.</div></div>';
+}
+function openGlossary(){
+  document.getElementById('content').style.display='none';
+  document.getElementById('navBtns').style.display='none';
+  document.getElementById('glossaryView').classList.add('show');
+  document.getElementById('hTitle').textContent='📖 용어 사전';
+  document.getElementById('hSub').textContent='코딩에서 자주 쓰는 용어 '+GLOSSARY.length+'개를 모아뒀어요';
+  document.getElementById('glossarySearch').value='';
+  renderGlossary('');
+}
+function closeGlossary(){
+  document.getElementById('content').style.display='';
+  document.getElementById('navBtns').style.display='';
+  document.getElementById('glossaryView').classList.remove('show');
+  goto(cur);
+}
+document.getElementById('glossaryBtn').onclick=openGlossary;
+document.getElementById('glossaryClose').onclick=closeGlossary;
+document.getElementById('glossarySearch').addEventListener('input',e=>renderGlossary(e.target.value));
 
 goto(0);
 </script>
