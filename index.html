@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>🧩 코딩 기초 — Coding Basics</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Malgun Gothic',sans-serif}
+  :root{
+    --bg:#0d0f1a; --panel:#151827; --panel2:#1c2036; --line:#2a2f4a;
+    --accent:#7ee0ff; --accent2:#ffce54; --txt:#e8ecf5; --dim:#8b93ad;
+    --good:#5ad17a; --bad:#ff5a78;
+  }
+  body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
+  #app{display:flex;height:100vh}
+
+  /* ── 사이드바 ── */
+  #sidebar{width:220px;flex:none;background:var(--panel);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;overflow-y:auto}
+  #sidebar h1{font-size:15px;padding:16px 14px;border-bottom:1px solid var(--line)}
+  .lesson{padding:12px 14px;cursor:pointer;font-size:13px;color:var(--dim);border-left:3px solid transparent}
+  .lesson:hover{background:var(--panel2);color:var(--txt)}
+  .lesson.active{background:var(--panel2);color:var(--accent);border-left-color:var(--accent);font-weight:700}
+  .lesson .num{color:var(--accent2);font-weight:700;margin-right:6px}
+
+  /* ── 메인 ── */
+  #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  #header{padding:16px 22px;border-bottom:1px solid var(--line);background:linear-gradient(#161a2c,#0d0f1a)}
+  #header h2{font-size:20px}
+  #header p{font-size:12px;color:var(--dim);margin-top:4px}
+  #content{flex:1;display:flex;gap:14px;padding:16px 22px;overflow:hidden}
+
+  #explain{flex:1;overflow-y:auto;padding-right:8px;font-size:14px;line-height:1.75}
+  #explain h3{color:var(--accent2);font-size:15px;margin:14px 0 6px}
+  #explain h3:first-child{margin-top:0}
+  #explain code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;font-family:Consolas,monospace;color:var(--accent)}
+  #explain ul{margin:6px 0 6px 18px}
+  #explain .tip{margin-top:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--accent2);
+    background:rgba(255,206,84,.08);font-size:12.5px}
+
+  #lab{flex:1;display:flex;flex-direction:column;min-width:0}
+  #lab h4{font-size:12px;color:var(--dim);margin-bottom:6px;letter-spacing:.5px}
+  #editor{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    color:var(--txt);font-family:Consolas,monospace;font-size:13.5px;padding:12px;resize:none;
+    outline:none;line-height:1.6;tab-size:2}
+  #editor:focus{border-color:var(--accent)}
+  #labBtns{display:flex;gap:8px;margin:10px 0}
+  .btn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    padding:8px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .btn:active{transform:scale(.96)}
+  #runBtn{background:var(--accent);color:#0d0f1a;border:none}
+  #resetBtn{color:var(--dim)}
+  #output{height:130px;background:#0a0c14;border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;overflow-y:auto;font-family:Consolas,monospace;font-size:12.5px;line-height:1.6}
+  #output .line{white-space:pre-wrap;word-break:break-all}
+  #output .err{color:var(--bad)}
+  #output .ph{color:var(--dim)}
+
+  #navBtns{display:flex;justify-content:space-between;padding:0 22px 16px}
+
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+  @media(max-width:820px){
+    #sidebar{width:70px}
+    #sidebar h1,.lesson .txt{display:none}
+    .lesson{text-align:center}
+    #content{flex-direction:column;overflow-y:auto}
+    #lab{min-height:400px}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <h1>🧩 코딩 기초</h1>
+    <div id="lessonList"></div>
+  </div>
+  <div id="main">
+    <div id="header">
+      <h2 id="hTitle"></h2>
+      <p id="hSub"></p>
+    </div>
+    <div id="content">
+      <div id="explain"></div>
+      <div id="lab">
+        <h4>✏️ 직접 코드를 고쳐서 실행해보세요 (JavaScript)</h4>
+        <textarea id="editor" spellcheck="false"></textarea>
+        <div id="labBtns">
+          <button class="btn" id="runBtn">▶ 실행</button>
+          <button class="btn" id="resetBtn">↺ 예제로 초기화</button>
+        </div>
+        <div id="output"><div class="ph line">// 실행 결과가 여기 표시됩니다</div></div>
+      </div>
+    </div>
+    <div id="navBtns">
+      <button class="btn" id="prevBtn">← 이전 단계</button>
+      <button class="btn" id="nextBtn">다음 단계 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LESSONS=[
+{
+  title:'변수 (Variable)',
+  sub:'데이터에 이름을 붙여 저장하는 방법',
+  html:`
+    <h3>변수란?</h3>
+    <p>변수는 값을 담아두는 <code>상자</code>입니다. 상자에 이름표를 붙이듯,
+    <code>let</code>이나 <code>const</code>로 이름을 붙여 값을 저장합니다.</p>
+    <ul>
+      <li><code>let</code> — 값이 바뀔 수 있는 변수</li>
+      <li><code>const</code> — 값이 바뀌지 않는 변수(상수)</li>
+    </ul>
+    <div class="tip">💡 팁: 처음엔 <b>const</b>를 기본으로 쓰고, 값이 꼭 바뀌어야 할 때만 <b>let</b>을 사용하세요.</div>
+  `,
+  code:`let name = "홍길동";\nconst age = 12;\n\nconsole.log("이름:", name);\nconsole.log("나이:", age);\n\n// 아래 줄을 바꿔서 실행해보세요!\nname = "김철수";\nconsole.log("변경된 이름:", name);`
+},
+{
+  title:'자료형 (Data Type)',
+  sub:'숫자, 문자, 참/거짓 — 데이터의 종류',
+  html:`
+    <h3>대표적인 자료형</h3>
+    <ul>
+      <li><code>Number</code> — 숫자 (예: 10, 3.14)</li>
+      <li><code>String</code> — 문자열, 따옴표로 감쌈 (예: "안녕")</li>
+      <li><code>Boolean</code> — 참(true) / 거짓(false)</li>
+    </ul>
+    <p><code>typeof</code>를 사용하면 값의 자료형을 확인할 수 있습니다.</p>
+    <div class="tip">💡 팁: 문자열끼리는 <code>+</code>로 이어붙일 수 있어요. <code>"안녕"+"하세요"</code></div>
+  `,
+  code:`const num = 42;\nconst str = "코딩";\nconst bool = true;\n\nconsole.log(typeof num, num);\nconsole.log(typeof str, str);\nconsole.log(typeof bool, bool);\n\nconsole.log("문자열 합치기:", "코딩" + "기초");`
+},
+{
+  title:'조건문 (if)',
+  sub:'상황에 따라 다르게 행동하기',
+  html:`
+    <h3>if / else</h3>
+    <p>조건이 참(true)이면 <code>if</code> 블록을, 거짓이면 <code>else</code> 블록을 실행합니다.</p>
+    <ul>
+      <li><code>&gt;, &lt;, &gt;=, &lt;=</code> — 크기 비교</li>
+      <li><code>===</code> — 같은지 비교</li>
+      <li><code>&&</code>(그리고), <code>||</code>(또는)</li>
+    </ul>
+    <div class="tip">💡 팁: <code>if (조건) {...} else if (조건) {...} else {...}</code> 형태로 여러 상황을 나눌 수 있어요.</div>
+  `,
+  code:`const score = 85;\n\nif (score >= 90) {\n  console.log("A등급");\n} else if (score >= 80) {\n  console.log("B등급");\n} else {\n  console.log("C등급 이하");\n}\n\n// score 값을 바꿔서 결과가 어떻게 달라지는지 확인해보세요!`
+},
+{
+  title:'반복문 (for / while)',
+  sub:'같은 작업을 여러 번 반복하기',
+  html:`
+    <h3>for문</h3>
+    <p><code>for (시작; 조건; 증감)</code> 형태로, 조건이 참인 동안 반복합니다.</p>
+    <h3>while문</h3>
+    <p>조건이 참인 동안 계속 반복합니다. 시작/증감을 직접 관리해야 해요.</p>
+    <div class="tip">💡 팁: 반복문 안에서 변수를 잘못 바꾸면 <b>무한 루프</b>에 빠질 수 있으니 조건과 증감을 항상 확인하세요.</div>
+  `,
+  code:`// 1부터 5까지 출력\nfor (let i = 1; i <= 5; i++) {\n  console.log("i =", i);\n}\n\n// 구구단 2단\nlet n = 1;\nwhile (n <= 9) {\n  console.log("2 x " + n + " = " + (2*n));\n  n++;\n}`
+},
+{
+  title:'함수 (Function)',
+  sub:'코드를 재사용 가능한 덩어리로 묶기',
+  html:`
+    <h3>함수란?</h3>
+    <p>자주 쓰는 코드를 이름 붙여 저장해두고, 필요할 때마다 <code>호출</code>해서 쓰는 것입니다.</p>
+    <ul>
+      <li><code>function 이름(매개변수) { 실행할 코드; return 결과; }</code></li>
+      <li><code>매개변수(parameter)</code> — 함수에 넘겨주는 값</li>
+      <li><code>return</code> — 함수가 돌려주는 결과값</li>
+    </ul>
+    <div class="tip">💡 팁: 함수 이름은 <b>동사</b>로 시작하면 읽기 좋아요. 예: <code>calculateSum</code>, <code>getName</code></div>
+  `,
+  code:`function add(a, b) {\n  return a + b;\n}\n\nfunction greet(name) {\n  return "안녕, " + name + "!";\n}\n\nconsole.log(add(3, 4));\nconsole.log(greet("코딩기초"));`
+},
+{
+  title:'배열 (Array)',
+  sub:'여러 값을 순서대로 담는 목록',
+  html:`
+    <h3>배열이란?</h3>
+    <p>여러 개의 값을 <code>[ ]</code> 안에 순서대로 담아 하나의 변수로 관리합니다.</p>
+    <ul>
+      <li><code>arr[0]</code> — 첫 번째 값 (인덱스는 0부터 시작!)</li>
+      <li><code>arr.length</code> — 배열의 길이</li>
+      <li><code>arr.push(값)</code> — 맨 뒤에 값 추가</li>
+      <li><code>arr.forEach(...)</code> — 배열의 각 값에 대해 반복 실행</li>
+    </ul>
+    <div class="tip">💡 팁: 배열 순회는 <code>for</code>문 대신 <code>forEach</code>나 <code>for...of</code>를 쓰면 더 간결해요.</div>
+  `,
+  code:`const fruits = ["사과", "바나나", "포도"];\n\nconsole.log("전체:", fruits);\nconsole.log("첫번째:", fruits[0]);\nconsole.log("개수:", fruits.length);\n\nfruits.push("딸기");\nfruits.forEach(f => console.log("과일:", f));`
+},
+{
+  title:'객체 (Object)',
+  sub:'이름표가 붙은 여러 값을 하나로 묶기',
+  html:`
+    <h3>객체란?</h3>
+    <p>배열이 순서로 값을 구분한다면, 객체는 <code>key: value</code> 형태로 이름을 붙여 값을 구분합니다.</p>
+    <ul>
+      <li><code>obj.key</code> 또는 <code>obj["key"]</code>로 값에 접근</li>
+      <li>객체 안에 함수를 넣을 수도 있어요 (메서드)</li>
+    </ul>
+    <div class="tip">💡 팁: 게임 캐릭터, 학생 정보 등 "속성이 여러 개인 하나의 대상"을 표현할 때 객체가 딱이에요.</div>
+  `,
+  code:`const student = {\n  name: "코딩이",\n  age: 13,\n  score: 92,\n  intro() {\n    return this.name + "의 점수는 " + this.score + "점";\n  }\n};\n\nconsole.log(student.name);\nconsole.log(student.intro());`
+},
+];
+
+let cur=0;
+const listEl=document.getElementById('lessonList');
+LESSONS.forEach((l,i)=>{
+  const d=document.createElement('div');
+  d.className='lesson'; d.dataset.i=i;
+  d.innerHTML=`<span class="num">${i+1}</span><span class="txt">${l.title}</span>`;
+  d.onclick=()=>goto(i);
+  listEl.appendChild(d);
+});
+
+function goto(i){
+  cur=i;
+  const l=LESSONS[i];
+  document.getElementById('hTitle').textContent=(i+1)+'. '+l.title;
+  document.getElementById('hSub').textContent=l.sub;
+  document.getElementById('explain').innerHTML=l.html;
+  document.getElementById('editor').value=l.code;
+  document.getElementById('output').innerHTML='<div class="ph line">// 실행 결과가 여기 표시됩니다</div>';
+  [...listEl.children].forEach(el=>el.classList.toggle('active',+el.dataset.i===i));
+  document.getElementById('prevBtn').disabled=i===0;
+  document.getElementById('nextBtn').textContent=(i===LESSONS.length-1)?'처음으로 ↺':'다음 단계 →';
+}
+
+function runCode(){
+  const out=document.getElementById('output');
+  out.innerHTML='';
+  const logs=[];
+  const fakeConsole={
+    log:(...args)=>logs.push({t:args.map(a=>typeof a==='object'?JSON.stringify(a):String(a)).join(' '),err:false}),
+    error:(...args)=>logs.push({t:args.map(a=>String(a)).join(' '),err:true}),
+  };
+  try{
+    const fn=new Function('console', document.getElementById('editor').value);
+    fn(fakeConsole);
+  }catch(e){
+    logs.push({t:'⚠️ 오류: '+e.message, err:true});
+  }
+  if(logs.length===0){ out.innerHTML='<div class="ph line">// 출력된 내용이 없습니다 (console.log를 사용해보세요)</div>'; return; }
+  logs.forEach(l=>{
+    const d=document.createElement('div');
+    d.className='line'+(l.err?' err':'');
+    d.textContent=l.t;
+    out.appendChild(d);
+  });
+}
+
+document.getElementById('runBtn').onclick=runCode;
+document.getElementById('resetBtn').onclick=()=>{ document.getElementById('editor').value=LESSONS[cur].code; };
+document.getElementById('prevBtn').onclick=()=>{ if(cur>0)goto(cur-1); };
+document.getElementById('nextBtn').onclick=()=>{ goto((cur+1)%LESSONS.length); };
+document.getElementById('editor').addEventListener('keydown',e=>{
+  if(e.key==='Tab'){ e.preventDefault();
+    const t=e.target, s=t.selectionStart, v=t.value;
+    t.value=v.slice(0,s)+'  '+v.slice(t.selectionEnd);
+    t.selectionStart=t.selectionEnd=s+2;
+  }
+});
+
+goto(0);
+</script>
+</body>
+</html>
