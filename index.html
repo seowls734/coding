@@ -456,7 +456,7 @@ const LESSONS=[
   code:`const score = 85;\n\nif (score >= 90) {\n  console.log("A등급");\n} else if (score >= 80) {\n  console.log("B등급");\n} else {\n  console.log("C등급 이하");\n}\n\n// score 값을 바꿔서 결과가 어떻게 달라지는지 확인해보세요!`,
   quizzes:[
     {
-      q:'변수 <code>num = 7</code>일 때, num이 짝수면 <b>"짝수"</b>, 홀수면 <b>"홀수"</b>를 출력하는 코드를 작성해보세요. (힌트: <code>num % 2 === 0</code>이면 짝수예요)',
+      q:'변수 <code>num = 7</code>일 때, num이 짝수면 <b>"짝수"</b>, 홀수면 <b>"홀수"</b>를 출력하는 코드를 작성해보세요. (힌트: <code>%</code>는 나눗셈의 <b>나머지</b>를 구하는 기호로, <code>num % 2 === 0</code>이면 짝수예요. %는 뒤의 연산자 레슨에서 더 자세히 배워요)',
       starter:`const num = 7;\n\n// if문으로 짝수/홀수를 판단해서 출력해보세요\n`,
       hint:'if (num % 2 === 0) { console.log("짝수"); } else { console.log("홀수"); }',
       check:logs=>logs.some(t=>t.includes('홀수')),
@@ -502,7 +502,7 @@ const LESSONS=[
     {
       q:'<code>for</code>문으로 1부터 5까지의 합을 구해서 출력해보세요. (정답: 15)',
       starter:`// 1부터 5까지 합을 구해 출력해보세요\n`,
-      hint:'let sum=0; for(let i=1;i<=5;i++){ sum+=i; } console.log(sum);',
+      hint:'let sum=0; for(let i=1;i<=5;i++){ sum = sum + i; } console.log(sum);',
       check:logs=>logs.some(t=>t.trim()==='15'),
     },
     {
@@ -551,6 +551,48 @@ const LESSONS=[
       starter:`function greet(name) {\n\n}\n\nconsole.log(greet("철수"));\n`,
       hint:'function greet(name) { return "안녕 " + name; }',
       check:logs=>logs.some(t=>t.includes('안녕')&&t.includes('철수')),
+    },
+  ]
+},
+{
+  title:'화살표 함수 & 스코프',
+  sub:'함수를 짧게 쓰는 법과 변수가 보이는 범위',
+  html:`
+    <h3>화살표 함수 (Arrow Function)</h3>
+    <p><code>function</code> 키워드 대신 <code>=&gt;</code>(화살표)로 함수를 더 짧게 쓸 수 있어요.</p>
+    <ul>
+      <li><code>function add(a,b){ return a+b; }</code></li>
+      <li>= <code>const add = (a,b) => a + b;</code> (중괄호+return 생략 가능)</li>
+    </ul>
+    <h3>스코프 (Scope) — 변수가 보이는 범위</h3>
+    <p>중괄호 <code>{ }</code> 안에서 만든 변수는 그 <b>안에서만</b> 사용할 수 있어요. 이걸 스코프라고 해요.</p>
+    <div class="tip">💡 팁: 함수나 if/for 블록 <b>안에서</b> let/const로 만든 변수는 블록 <b>밖에서는</b> 사용할 수 없어요.</div>
+    <h3>자주 하는 실수</h3>
+    <ul>
+      <li>화살표 함수에서 중괄호 <code>{ }</code>를 쓰면 <b>반드시 return을 직접 써야</b> 해요. 중괄호 없이 한 줄로 쓸 때만 return이 자동 생략돼요.</li>
+      <li>매개변수가 하나면 괄호를 생략할 수 있어요(<code>x => x*2</code>). 하지만 매개변수가 없거나 둘 이상이면 괄호가 꼭 필요해요(<code>() => 1</code>, <code>(a,b) => a+b</code>).</li>
+      <li>블록 스코프 밖에서 안쪽 변수를 쓰려고 하면 <b>"정의되지 않음" 오류</b>가 나요. 필요한 변수는 블록 바깥에서 미리 선언하세요.</li>
+    </ul>
+  `,
+  code:`const add = (a, b) => a + b;\nconst square = x => x * x;\n\nconsole.log(add(2, 3));\nconsole.log(square(5));\n\nif (true) {\n  let insideVar = "나는 블록 안에만 있어요";\n  console.log(insideVar);\n}\n// console.log(insideVar); // 여기서 쓰면 오류가 나요! (스코프 밖이라서)`,
+  quizzes:[
+    {
+      q:'화살표 함수로 <code>triple</code>이라는, 숫자를 3배로 만드는 함수를 만들고 <code>triple(4)</code>를 출력해보세요.',
+      starter:`// triple 화살표 함수를 만들고 triple(4)를 출력해보세요\nconst triple = x => ;\n`,
+      hint:'const triple = x => x * 3; 그 다음 console.log(triple(4)); → 결과는 12예요.',
+      check:logs=>logs.some(t=>t.trim()==='12'),
+    },
+    {
+      q:'화살표 함수로 <code>double</code>(숫자를 2배로 만드는 함수)을 만들고 <code>double(5)</code>를 출력해보세요.',
+      starter:`const double = x => ;\n\nconsole.log(double(5));\n`,
+      hint:'const double = x => x * 2; → double(5)는 10',
+      check:logs=>logs.some(t=>t.trim()==='10'),
+    },
+    {
+      q:'<code>if(true){ let a=5; }</code> 블록 밖에서 <code>typeof a</code>를 출력해보세요. 스코프 밖이라 값이 없다는 걸 확인하는 문제예요. (정답: "undefined")',
+      starter:`if (true) {\n  let a = 5;\n}\n\n// 블록 밖에서 typeof a를 출력해보세요\n`,
+      hint:'console.log(typeof a); → 블록 안에서만 존재하는 변수라 밖에서는 "undefined"',
+      check:logs=>logs.some(t=>t.includes('undefined')),
     },
   ]
 },
@@ -854,48 +896,6 @@ const LESSONS=[
       starter:`const num = 8;\n\n// 삼항연산자로 출력해보세요\n`,
       hint:'console.log(num % 2 === 0 ? "짝" : "홀");',
       check:logs=>logs.some(t=>t.trim()==='짝'),
-    },
-  ]
-},
-{
-  title:'화살표 함수 & 스코프',
-  sub:'함수를 짧게 쓰는 법과 변수가 보이는 범위',
-  html:`
-    <h3>화살표 함수 (Arrow Function)</h3>
-    <p><code>function</code> 키워드 대신 <code>=&gt;</code>(화살표)로 함수를 더 짧게 쓸 수 있어요.</p>
-    <ul>
-      <li><code>function add(a,b){ return a+b; }</code></li>
-      <li>= <code>const add = (a,b) => a + b;</code> (중괄호+return 생략 가능)</li>
-    </ul>
-    <h3>스코프 (Scope) — 변수가 보이는 범위</h3>
-    <p>중괄호 <code>{ }</code> 안에서 만든 변수는 그 <b>안에서만</b> 사용할 수 있어요. 이걸 스코프라고 해요.</p>
-    <div class="tip">💡 팁: 함수나 if/for 블록 <b>안에서</b> let/const로 만든 변수는 블록 <b>밖에서는</b> 사용할 수 없어요.</div>
-    <h3>자주 하는 실수</h3>
-    <ul>
-      <li>화살표 함수에서 중괄호 <code>{ }</code>를 쓰면 <b>반드시 return을 직접 써야</b> 해요. 중괄호 없이 한 줄로 쓸 때만 return이 자동 생략돼요.</li>
-      <li>객체를 바로 돌려주는 화살표 함수는 <code>x => {name: x}</code>가 아니라 <code>x => ({name: x})</code>처럼 <b>괄호로 감싸야</b> 해요. 안 그러면 중괄호를 코드 블록으로 착각해요.</li>
-      <li>블록 스코프 밖에서 안쪽 변수를 쓰려고 하면 <b>"정의되지 않음" 오류</b>가 나요. 필요한 변수는 블록 바깥에서 미리 선언하세요.</li>
-    </ul>
-  `,
-  code:`const add = (a, b) => a + b;\nconst square = x => x * x;\n\nconsole.log(add(2, 3));\nconsole.log(square(5));\n\nif (true) {\n  let insideVar = "나는 블록 안에만 있어요";\n  console.log(insideVar);\n}\n// console.log(insideVar); // 여기서 쓰면 오류가 나요! (스코프 밖이라서)`,
-  quizzes:[
-    {
-      q:'화살표 함수로 <code>triple</code>이라는, 숫자를 3배로 만드는 함수를 만들고 <code>triple(4)</code>를 출력해보세요.',
-      starter:`// triple 화살표 함수를 만들고 triple(4)를 출력해보세요\nconst triple = x => ;\n`,
-      hint:'const triple = x => x * 3; 그 다음 console.log(triple(4)); → 결과는 12예요.',
-      check:logs=>logs.some(t=>t.trim()==='12'),
-    },
-    {
-      q:'화살표 함수로 <code>double</code>(숫자를 2배로 만드는 함수)을 만들고 <code>double(5)</code>를 출력해보세요.',
-      starter:`const double = x => ;\n\nconsole.log(double(5));\n`,
-      hint:'const double = x => x * 2; → double(5)는 10',
-      check:logs=>logs.some(t=>t.trim()==='10'),
-    },
-    {
-      q:'<code>if(true){ let a=5; }</code> 블록 밖에서 <code>typeof a</code>를 출력해보세요. 스코프 밖이라 값이 없다는 걸 확인하는 문제예요. (정답: "undefined")',
-      starter:`if (true) {\n  let a = 5;\n}\n\n// 블록 밖에서 typeof a를 출력해보세요\n`,
-      hint:'console.log(typeof a); → 블록 안에서만 존재하는 변수라 밖에서는 "undefined"',
-      check:logs=>logs.some(t=>t.includes('undefined')),
     },
   ]
 },
