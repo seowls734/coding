@@ -483,6 +483,9 @@ const LESSONS=[
     <p><code>for (시작; 조건; 증감)</code> 형태로, 조건이 참인 동안 반복합니다.</p>
     <h3>while문</h3>
     <p>조건이 참인 동안 계속 반복합니다. 시작/증감을 직접 관리해야 해요.</p>
+    <h3>반복하면서 값 쌓기 (합계 구하기)</h3>
+    <p>반복문으로 숫자를 <b>더해나가려면</b>, 반복문 <b>밖에</b> 합을 담을 변수를 먼저 만들고(<code>let sum = 0;</code>),
+    반복문 <b>안에서</b> 그 변수에 계속 더해줘요(<code>sum = sum + i;</code>). 이렇게 값을 조금씩 쌓아가는 걸 <b>누적</b>이라고 해요.</p>
     <div class="tip">💡 팁: 반복문 안에서 변수를 잘못 바꾸면 <b>무한 루프</b>에 빠질 수 있으니 조건과 증감을 항상 확인하세요.</div>
     <h3>자주 하는 실수</h3>
     <ul>
@@ -491,7 +494,7 @@ const LESSONS=[
       <li>반복문 안에서 <code>let</code>으로 선언한 변수(<code>i</code> 등)는 반복문 밖에서는 사용할 수 없어요.</li>
     </ul>
   `,
-  code:`// 1부터 5까지 출력\nfor (let i = 1; i <= 5; i++) {\n  console.log("i =", i);\n}\n\n// 구구단 2단\nlet n = 1;\nwhile (n <= 9) {\n  console.log("2 x " + n + " = " + (2*n));\n  n++;\n}`,
+  code:`// 1부터 5까지 출력\nfor (let i = 1; i <= 5; i++) {\n  console.log("i =", i);\n}\n\n// 구구단 2단\nlet n = 1;\nwhile (n <= 9) {\n  console.log("2 x " + n + " = " + (2*n));\n  n++;\n}\n\n// 1부터 5까지 더하기 (값을 누적하기)\nlet sum = 0;\nfor (let i = 1; i <= 5; i++) {\n  sum = sum + i;\n}\nconsole.log("합계:", sum);`,
   quizzes:[
     {
       q:'<code>for</code>문을 사용해서 1부터 3까지의 숫자를 한 줄씩 출력해보세요. (결과: 1, 2, 3이 각각 다른 줄에 나와야 해요)',
@@ -500,8 +503,8 @@ const LESSONS=[
       check:logs=>logs.some(t=>t.trim()==='1')&&logs.some(t=>t.trim()==='2')&&logs.some(t=>t.trim()==='3'),
     },
     {
-      q:'<code>for</code>문으로 1부터 5까지의 합을 구해서 출력해보세요. (정답: 15)',
-      starter:`// 1부터 5까지 합을 구해 출력해보세요\n`,
+      q:'<code>for</code>문으로 1부터 5까지의 합을 구해서 출력해보세요. (정답: 15) — 위에서 배운 것처럼 <code>let sum = 0;</code>을 반복문 밖에 두고 안에서 더해가세요.',
+      starter:`let sum = 0;\n\n// for문으로 sum에 1부터 5까지 더한 뒤, sum을 출력해보세요\n`,
       hint:'let sum=0; for(let i=1;i<=5;i++){ sum = sum + i; } console.log(sum);',
       check:logs=>logs.some(t=>t.trim()==='15'),
     },
